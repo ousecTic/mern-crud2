@@ -26,4 +26,42 @@ commentRoutes.route("/add").post((req, res) => {
     });
 });
 
+//edit route
+
+commentRoutes.route("/edit/:id").get((req, res) => {
+  let id = req.params.id;
+  Comment.findById(id, (err, comment) => {
+    res.json(comment);
+  });
+});
+
+//update route
+
+commentRoutes.route("/update/:id").post((req, res) => {
+  Comment.findById(req.params.id, (err, comment) => {
+    if (!comment) res.status(404).send("data is not found");
+    else {
+      comment.name = req.body.name;
+      comment.comment = req.body.comment;
+      comment
+        .save()
+        .then(comment => {
+          res.json("update completed");
+        })
+        .catch(err => {
+          res.status(400).send("unable to update the database");
+        });
+    }
+  });
+});
+
+//delete route
+
+commentRoutes.route("/delete/:id").get((req, res) => {
+  Comment.findByIdAndRemove({ _id: req.params.id }, (err, comment) => {
+    if (err) res.json(err);
+    else res.json("successfully removed");
+  });
+});
+
 module.exports = commentRoutes;
